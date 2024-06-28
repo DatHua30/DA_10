@@ -21,4 +21,18 @@ GROUP BY candidate_id
 HAVING COUNT(skill) = 3
 ORDER BY candidate_id;
 
---Câu 6: 
+--Câu 6:
+SELECT user_id, extract(Day from max(post_Date) - MIN(post_Date)) as days_between
+FROM posts
+where extract(year from post_Date ) = 2021
+Group by 1
+having extract(Day from max(post_Date) - MIN(post_Date)) >0 
+order by user_id
+; 
+
+--CÂU 7: 
+
+
+
+
+

@@ -8,6 +8,8 @@ Select count(city)*1-count(distinct city)*1
 From station
 
 --Câu 3:
+SELECT CEIL((AVG(salary)) - (AVG(REPLACE(salary, '0', '')))) AS avg_salary
+From employees
 
 --Câu 4:
 SELECT round(sum(item_count :: decimal *order_occurrences)/sum(order_occurrences) , 1)
@@ -31,8 +33,44 @@ order by user_id
 ; 
 
 --CÂU 7: 
+SELECT card_name, max(issued_amount) - min(issued_amount) as difference
+FROM monthly_cards_issued
+Group by card_name
+order by 2 desc ;
+
+--Câu 8:
+SELECT
+  manufacturer,
+  COUNT(drug) AS drug_count,
+  ABS(SUM(total_sales - cogs)) AS total_loss
+FROM pharmacy_sales
+WHERE total_sales - cogs <= 0
+GROUP BY manufacturer
+ORDER BY total_loss DESC;
 
 
+--Câu 9:
+Select id, movie, description, rating
+From cinema
+where mod(id,2) <> 0 
+and description <> 'boring'
+order by rating desc
 
+--Câu 10:
+
+SELECT teacher_id, count(distinct subject_id) as cnt
+From teacher
+Group by 1
+
+--Câu 11
+Select user_id, count(follower_id) as followers_count
+From followers 
+Group by 1
+
+-- Câu 12:
+Select class
+From courses
+group by class
+having count(student) >=5
 
 

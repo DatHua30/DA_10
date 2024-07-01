@@ -35,6 +35,21 @@ From Tweets
 where length(content)>15;
 
 --Câu 7:
+--Câu 8: 
+Select employee_id
+From employees
+where joining_Date between '2022-01-01' and '2022-07-31'
+
+--Câu 9:
+select position( 'a' in first_name)
+from worker
+where first_name = 'Amitah';
+
+--Câu 10: 
+select title, substring(title, position('2' in title), 4) as year
+from winemag_p2
+where country = 'Macedonia'
+
 
 
 

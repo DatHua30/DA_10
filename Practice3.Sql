@@ -35,6 +35,12 @@ From Tweets
 where length(content)>15;
 
 --Câu 7:
+Select activity_Date as Day, count(distinct user_id) as active_users
+From activity
+where activity_Date between '2019-06-28' and '2019-07-31'
+group by 1
+
+
 --Câu 8: 
 Select employee_id
 From employees

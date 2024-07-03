@@ -39,7 +39,23 @@ on a.employee_id = b.reports_to
 Group by 1
 
 --Câu 6: 
+Select a.product_name, sum(b.unit) as unit
+From products a
+inner join orders b 
+on a.product_id = b.product_id 
+and extract(month from order_date) = '2' and extract(year from order_Date) = '2020'
+Group by a.product_name
+having sum(b.unit) >=100
 
+
+--Câu 7: 
+
+SELECT a.page_id 
+FROM pages a   
+left join page_likes b 
+on a.page_id = b.page_id 
+where b.liked_Date is null 
+order by 1 
 
 
 

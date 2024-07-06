@@ -118,8 +118,44 @@ FROM job_listings
 Group by 1,2,3
 having count(job_id) > 1)
 Select count(*)
-From bang1
+from bang1 
 
 --Câu 11:
+ 
+with bang1 as(Select a.title, avg(b.rating) 
+From movies a 
+inner join MovieRating b 
+on a.movie_id = b.movie_id
+where extract(month from b.created_At) = '2' and extract(year from b.created_At) = 2020
+Group by 1
+order by 2 desc, 1
+limit 1)
+
+,bang2 as(Select b.name, count(a.created_At)
+From MovieRating a 
+inner join users b 
+on a.user_id = b.user_id
+group by 1 
+order by 2 desc 
+limit 1)
+
+Select name as results
+From bang2 
+union all 
+Select title as results
+From bang1
+
+
+--Câu 12:
+SELECT ids as id, COUNT(*) AS num
+   FROM
+   (
+        SELECT requester_id AS ids FROM requestaccepted
+        UNION ALL
+        SELECT accepter_id FROM requestaccepted
+    ) AS tmp
+GROUP BY ids
+ORDER BY num DESC
+LIMIT 1
 
 

@@ -74,3 +74,14 @@ From bang1
 where stt in (1,2,3)
 order by 3 desc
 
+--Câu 7:
+with bang1 as(Select person_name,
+sum(weight) over(order by turn) as total_weight
+From queue )
+
+Select person_name
+From bang1
+where total_Weight = 1000
+
+--Câu 8:
+

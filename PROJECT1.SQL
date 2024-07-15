@@ -55,3 +55,61 @@ ALTER COLUMN order_date type date USING(order_date::date)
 
 alter table sales_dataset_rfm_prj
 ALTER COLUMN status type text 
+
+alter table sales_dataset_rfm_prj
+ALTER COLUMN productline type text 
+
+alter table sales_dataset_rfm_prj
+ALTER COLUMN msrp type integer using(msrp::integer) 
+
+alter table sales_dataset_rfm_prj
+ALTER COLUMN city type text 
+
+alter table sales_dataset_rfm_prj
+ALTER COLUMN state type text 
+
+alter table sales_dataset_rfm_prj
+ALTER COLUMN country type text 
+
+alter table sales_dataset_rfm_prj
+ALTER COLUMN territory type text 
+
+alter table sales_dataset_rfm_prj
+ALTER COLUMN contact_full_name type text 
+
+alter table sales_dataset_rfm_prj
+ALTER COLUMN deal_size type text
+
+--Câu 2:
+Select *
+From public.sales_dataset_rfm_prj
+where order_number is null or order_number = ' '
+
+Select *
+From public.sales_dataset_rfm_prj
+where quantity_ordered is null 
+
+Select *
+From public.sales_dataset_rfm_prj
+where price_Each is null 
+
+Select *
+From public.sales_dataset_rfm_prj
+where order is null 
+
+Select order_Date
+From public.sales_dataset_rfm_prj
+group by 1
+
+Select *
+From public.sales_dataset_rfm_prj
+where sales is null
+
+--Câu 3:
+update sales_dataset_rfm_prj 
+set contact_first_name = left(contact_full_name, position('-' in contact_full_name)-1)
+
+update sales_dataset_rfm_prj
+set contact_last_name = right(contact_full_name,length(contact_full_name) - position('-' in contact_full_name))
+
+--Câu 4: 

@@ -162,3 +162,7 @@ where quantity_ordered in (Select quantity_ordered From bang3)
 delete from sales_dataset_rfm_prj
 where quantity_ordered in (Select quantity_ordered From bang3)
 
+--Câu 6:
+CREATE TABLE SALES_DATASET_RFM_PRJ_CLEAN AS
+SELECT *
+FROM sales_dataset_rfm_prj

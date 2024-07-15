@@ -106,6 +106,12 @@ From public.sales_dataset_rfm_prj
 where sales is null
 
 --Câu 3:
+alter table sales_dataset_rfm_prj 
+add column contact_first_name text
+
+alter table sales_dataset_rfm_prj 
+add column contact_last_name text
+
 update sales_dataset_rfm_prj 
 set contact_first_name = left(contact_full_name, position('-' in contact_full_name)-1)
 
@@ -113,3 +119,46 @@ update sales_dataset_rfm_prj
 set contact_last_name = right(contact_full_name,length(contact_full_name) - position('-' in contact_full_name))
 
 --Câu 4: 
+alter table sales_dataset_rfm_prj
+add column qtr_id integer
+
+alter table sales_dataset_rfm_prj
+add column month_id integer
+
+alter table sales_dataset_rfm_prj
+add column year_id integer
+
+update sales_dataset_rfm_prj
+set qtr_id = extract(quarter from order_Date)
+
+update sales_dataset_rfm_prj
+set month_id = extract(month from order_Date)
+
+update sales_dataset_rfm_prj
+set year_id = extract(year from order_Date)
+
+--Câu 5: 
+--Tìm outlier
+with bang1 as(Select percentile_cont(0.25) within group(order by quantity_ordered) as Q1,
+	percentile_cont(0.75) within group(order by quantity_ordered) as Q3,
+	percentile_cont(0.75) within group(order by quantity_ordered) - percentile_cont(0.25) within group(order by quantity_ordered) AS IQR
+	
+From public.sales_dataset_rfm_prj)
+
+,bang2 as(Select Q1-1.5*IQR as min_value,
+Q3+1.5*IQR as max_value
+From bang1)
+
+,bang3 as(Select quantity_ordered 
+From public.sales_dataset_rfm_prj
+where quantity_ordered < (Select min_value from bang2)
+or quantity_ordered > (Select max_value from bang2))
+--Cách 1
+update sales_dataset_rfm_prj 
+set quantity_ordered =(select avg(quantity_ordered) from sales_dataset_rfm_prj )
+where quantity_ordered in (Select quantity_ordered From bang3)
+
+--Cách 2:
+delete from sales_dataset_rfm_prj
+where quantity_ordered in (Select quantity_ordered From bang3)
+

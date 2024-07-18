@@ -177,4 +177,33 @@ on b.product_id = c.id
 GROUP BY 1,2,3 
 order by 1
 
+2. Cohort Analysis
+with bang1 as(
+SELECT user_id, created_at as current_Date, 
+min(created_at) over(partition by user_id order by extract(month from created_at)) as first_Date
+From bigquery-public-data.thelook_ecommerce.orders )
+
+,bang2 as(
+Select user_id, format_Date('%Y-%m',first_Date) as cohort_Date,
+(extract(year from current_Date)- extract(year from first_Date))*12 + (extract(month from current_Date) - extract(month from first_Date))+1 as index 
+From bang1 
+order by 2
+)
+
+,bang3 as(
+Select cohort_Date, 
+index, count(distinct user_id) as num_of_cus
+From bang2
+Group by 1,2
+order by 1  desc)
+
+SELECT cohort_Date,
+sum(case when index = 1 then num_of_cus else 0 end) as one,
+sum(case when index = 2 then num_of_cus else 0 end) as two,
+sum(case when index = 3 then num_of_cus else 0 end) as three,
+sum(case when index = 4 then num_of_cus else 0 end) as four
+From bang3 
+where index in (1,2,3,4)
+Group by 1
+order by 1
 

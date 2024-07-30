@@ -114,4 +114,26 @@ set order_item = (Select avg(order_item) From public.olist_orders_item_dataset )
 where order_item in (Select order_item from bang3)
 
 --Analysis
+--First I find out the distribution of customer in the country according to state
+Select customer_state, count( customer_id) as num_of_cus
+From public.olist_customer_dataset
+Group by 1 
+order by 2 desc
 
+From this, I found out that the majority of Olist's customers come from SP, RJ, MG
+
+Next, I calculate the average revenue per customer according to each state
+Select customer_state, round(sum(price + freight_value)/count(distinct c.customer_id)*1.0,2) as total_revenue_percapita
+From public.olist_orders_item_dataset a 
+inner join  public.olist_orders_dataset b 
+on a.order_id = b.order_id 
+inner join public.olist_customer_dataset c 
+on b.customer_id = c.customer_id
+Group by 1 
+order by 2 desc
+
+From this, I found out that although AP,AC, RR are states with lowest numbers of customer but the customers in these states spend more than any other states in the data
+
+
+
+First I calculate the average amount of revenue per customer each year from 2016, 2017, 2018, 2020

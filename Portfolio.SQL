@@ -19,3 +19,6 @@ Create table olist_orders_dataset (
 	order_estimated_delivery_date varchar
 )
 
+
+DATA CLEANING
+After importing data, I noticed there were several syntax errors and inconsistency in date format in the datasets, so I used SQL code to replace the syntax error and update the format.

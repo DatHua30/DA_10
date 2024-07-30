@@ -49,7 +49,7 @@ Changing the date format in tables:
 alter table public.olist_orders_item_dataset
 alter column shipping_limit_date type timestamp  using(shipping_limit_date::timestamp)
 
-Removing outliers in price and freight_value in olist_orders_item_dataset table using box plot
+Removing outliers in price, freight_value and order_item in olist_orders_item_dataset table using box plot
 
 
 

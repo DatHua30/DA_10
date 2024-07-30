@@ -49,9 +49,69 @@ Changing the date format in tables:
 alter table public.olist_orders_item_dataset
 alter column shipping_limit_date type timestamp  using(shipping_limit_date::timestamp)
 
-Removing outliers in price, freight_value and order_item in olist_orders_item_dataset table using box plot
+Removing outliers in price, freight_value and order_item in olist_orders_item_dataset table using box plot. In order to not affect the number of rows,
+I will choose to update the outliers value with the average values of those outliers.
 
+--Price
+with bang1 as(Select percentile_cont(0.25) within group(order by price) as Q1,
+percentile_cont(0.75) within group(order by price) as Q3,
+percentile_cont(0.75) within group(order by price) - percentile_cont(0.25) within group(order by price) as IQR
+From public.olist_orders_item_dataset)
 
+, bang2 as(
+	Select Q1-1.5*IQR as min_value,
+Q3+1.5*IQR as max_Value
+From bang1 )
 
+,bang3 as(Select price 
+From public.olist_orders_item_dataset
+where price < (Select min_Value from bang2) 
+or price > (Select max_value from bang2))
 
+Update public.olist_orders_item_dataset
+set price = (Select avg(price) From public.olist_orders_item_dataset )
+where price in (Select price from bang3)
+
+--Freight value
+with bang1 as(Select percentile_cont(0.25) within group(order by freight_value) as Q1,
+percentile_cont(0.75) within group(order by freight_value) as Q3,
+percentile_cont(0.75) within group(order by freight_value) - percentile_cont(0.25) within group(order by freight_Value) as IQR
+From public.olist_orders_item_dataset)
+
+, bang2 as(
+	Select Q1-1.5*IQR as min_value,
+Q3+1.5*IQR as max_Value
+From bang1 )
+
+,bang3 as(Select freight_Value 
+From public.olist_orders_item_dataset
+where freight_Value < (Select min_Value from bang2) 
+or freight_Value > (Select max_value from bang2))
+
+Update public.olist_orders_item_dataset
+set freight_Value = (Select avg(freight_Value) From public.olist_orders_item_dataset )
+where freight_Value in (Select freight_Value from bang3)
+
+--order_item
+
+with bang1 as(Select percentile_cont(0.25) within group(order by order_item) as Q1,
+percentile_cont(0.75) within group(order by order_item) as Q3,
+percentile_cont(0.75) within group(order by order_item) - percentile_cont(0.25) within group(order by order_item) as IQR
+From public.olist_orders_item_dataset)
+
+, bang2 as(
+	Select Q1-1.5*IQR as min_value,
+Q3+1.5*IQR as max_Value
+From bang1 )
+
+,bang3 as(Select ORDER_ITEM
+From public.olist_orders_item_dataset
+where order_item < (Select min_Value from bang2) 
+or order_item > (Select max_value from bang2))
+
+Update public.olist_orders_item_dataset
+set order_item = (Select avg(order_item) From public.olist_orders_item_dataset )
+where order_item in (Select order_item from bang3)
+
+--Analysis
 

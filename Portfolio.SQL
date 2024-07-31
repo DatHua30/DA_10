@@ -19,7 +19,18 @@ Create table olist_orders_dataset (
 	order_estimated_delivery_date varchar
 )
 
+After that, I changed the date format of the remaining to timestamp
+alter table public.olist_orders_dataset
+alter column order_purchase_timestamp type timestamp using(order_purchase_timestamp:: timestamp )
 
+alter table public.olist_orders_dataset
+alter column order_estimated_delivery_Date type timestamp using(order_estimated_delivery_date:: timestamp )
+
+
+Changing the date format in tables:
+
+alter table public.olist_orders_item_dataset
+alter column shipping_limit_date type timestamp  using(shipping_limit_date::timestamp)
 DATA CLEANING
 After importing data, I noticed there were several syntax errors and inconsistency in date format in the datasets, so I used SQL code to replace the syntax error and update the format.
 
@@ -36,18 +47,38 @@ drop column order_delivered_carrier_Date
 alter table public.olist_orders_dataset
 drop column order_Delivered_customer_DAte
 
-After that, I changed the date format of the remaining to timestamp
-alter table public.olist_orders_dataset
-alter column order_purchase_timestamp type timestamp using(order_purchase_timestamp:: timestamp )
+Checking other tables by using is null, I found that the dataset does not contain any NULL values.
+Select *
+From public.olist_customer_dataset
+where customer_id is null
 
-alter table public.olist_orders_dataset
-alter column order_estimated_delivery_Date type timestamp using(order_estimated_delivery_date:: timestamp )
+Select *
+From public.olist_geolocation_dataset
+where geolocation_zip_code_prefix is null
+
+Select *
+From public.olist_orders_item_dataset
+where order_id is null
+
+Select *
+From segment_Score
+where segment is null or scores is null
 
 
-Changing the date format in tables:
+Cleaning duplicate value
+By using the ROW_NUMBER() function to group the data and setting the condition that it is greater than 1, we found that the dataset does not contain any duplicate data
+Select * From (Select *,
+	ROW_NUMBER() OVER(PARTITION BY order_id, order_item, product_id, seller_id, price, freight_value) as stt
+From public.olist_orders_item_dataset ) as bang1
+where stt >1
 
-alter table public.olist_orders_item_dataset
-alter column shipping_limit_date type timestamp  using(shipping_limit_date::timestamp)
+
+Select * From (Select *,
+	ROW_NUMBER() OVER(PARTITION BY order_id, customer_id, order_status) as stt
+From public.olist_orders_dataset) as bang1
+where stt >1
+
+
 
 Removing outliers in price, freight_value and order_item in olist_orders_item_dataset table using box plot. In order to not affect the number of rows,
 I will choose to update the outliers value with the average values of those outliers.
@@ -112,6 +143,17 @@ or order_item > (Select max_value from bang2))
 Update public.olist_orders_item_dataset
 set order_item = (Select avg(order_item) From public.olist_orders_item_dataset )
 where order_item in (Select order_item from bang3)
+
+As previously mentioned, this project will focus solely on the year 2018. To optimize code run-time, I will create a new table named 'olist_orders_Dataset_2018', which will include only the data of customers who made purchases in 2018 and their orders were ‘delivered’
+Create table olist_orders_dataset_2018 as (
+Select *
+From public.olist_orders_dataset
+where customer_id in (Select customer_id
+From public.olist_orders_dataset
+where extract(year from order_purchase_timestamp) = '2018' 
+and order_status = 'delivered'))
+
+
 
 --Analysis
 --First I find out the distribution of customer in the country according to state

@@ -139,6 +139,7 @@ From this, I found out that although AP,AC, RR are states with lowest numbers of
 First I calculate the average amount of revenue per customer each year from 2016, 2017, 2018, 2020
 
 RFM ANALYSIS
+--First I calculate 
 with bang1 as(Select c.customer_id, round(extract(epoch from current_Date - max(b.order_purchase_timestamp))/3600,0) as R,
 count(distinct a.order_id) as F,
 round(sum(a.price+a.freight_Value),0) as M
@@ -158,8 +159,13 @@ From bang1)
 , final as(Select customer_id, R_Score:: varchar || F_score::varchar ||M_Score::varchar as RFM_score
 From rfm_Score)
 
-Select a.customer_id, 
+, bangcuoi as(Select a.customer_id, 
 b.segment
 From final a 
 inner join public.segment_score b 
-on a.RFM_score = b.scores
+on a.RFM_score = b.scores)
+
+Select segment, count(customer_id)
+From bangcuoi
+group by 1
+order by 2

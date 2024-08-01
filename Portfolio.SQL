@@ -156,6 +156,46 @@ and order_status = 'delivered'))
 
 
 --Analysis
+EDA: FIND LIST OF CHURN CUSTOMERS
+with bang1 as(Select customer_id, max(order_purchase_timestamp) as latest_Date,
+('2018-12-31'-max(cast(order_purchase_timestamp as date))) as date_diff
+From public.olist_orders_dataset_2018
+group by 1
+order by 3 desc)
+
+,bang2 as(Select customer_id,
+	case when date_diff >150 then 'Churn' else 'Normal' end as category
+from bang1)
+
+,bang3 as(Select a.customer_id, a.category, b.customer_city, b.customer_state
+From bang2 a
+inner join public.olist_customer_dataset b 
+on a.customer_id = b.customer_id
+)
+
+A.Churn customer persona
+TOP 10 STATE
+Select customer_CITY, count(customer_id)
+From bang3 
+where category = 'Churn'
+group by 1
+order by 2 desc  
+LIMIT 10
+SP has the highest number of churned customers (20,446), significantly more than the second-highest state, the RJ (5,682). 
+
+TOP 10 CITY
+Select customer_CITY, count(customer_id)
+From bang3 
+where category = 'Churn'
+group by 1
+order by 2 desc  
+limit 10
+
+
+
+
+
+
 --First I find out the distribution of customer in the country according to state
 Select customer_state, count( customer_id) as num_of_cus
 From public.olist_customer_dataset
@@ -178,7 +218,9 @@ From this, I found out that although AP,AC, RR are states with lowest numbers of
 
 
 
-First I calculate the average amount of revenue per customer each year from 2016, 2017, 2018, 2020
+
+
+
 
 RFM ANALYSIS
 --First I calculate 

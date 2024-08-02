@@ -226,7 +226,7 @@ RFM ANALYSIS
 --First I calculate 
 with bang1 as(Select c.customer_id, round(extract(epoch from current_Date - max(b.order_purchase_timestamp))/3600,0) as R,
 count(distinct a.order_id) as F,
-round(sum(a.price+a.freight_Value),0) as M
+round(sum(a.price*a.order_item+a.freight_Value*a.order_item),0) as M
 From public.olist_orders_item_dataset a
 inner join  public.olist_orders_dataset_2018 b 
 on a.order_id = b.order_id 
@@ -255,8 +255,35 @@ group by 1
 order by 2
 
 After find out the distribution of customers in RFM group, I find out the revenue of each group accordingly
+, doanhthu as(Select a.customer_id, a.segment,
+round(sum(c.price*c.order_item + c.freight_Value*c.order_item),0) as rev
+From bangcuoi a 
+inner join public.olist_orders_dataset_2018 b 
+on a.customer_id =b.customer_id 
+inner join public.olist_orders_item_dataset c 
+on b.order_id = c.order_id 
+Group by 1,2
+order by 3)
 
+Select segment, sum(rev)
+From doanhthu
+group by 1
+order by 2 desc
 
 =>Champion, Loyal and At risk have the highest rev
 
 =>To increase revenue we need to understand the at risk group: where are they from, what they buy and why they stopped buying
+a. where are they from 
+, location as(Select a.customer_id, a.segment, b.customer_state
+From bangcuoi a 
+inner join public.olist_customer_dataset b
+on a.customer_id = b.customer_id
+where a.segment = 'At Risk')
+
+Select customer_State, count(segment) as num_of_at_risk_Cus
+From location 
+group by 1
+order by 2 desc 
+=>>They are mainly from SP, RJ,MG state
+
+b. what they buy 

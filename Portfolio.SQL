@@ -228,7 +228,7 @@ with bang1 as(Select c.customer_id, round(extract(epoch from current_Date - max(
 count(distinct a.order_id) as F,
 round(sum(a.price+a.freight_Value),0) as M
 From public.olist_orders_item_dataset a
-inner join  public.olist_orders_dataset b 
+inner join  public.olist_orders_dataset_2018 b 
 on a.order_id = b.order_id 
 inner join public.olist_customer_dataset c 
 on b.customer_id = c.customer_id

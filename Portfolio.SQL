@@ -253,3 +253,10 @@ Select segment, count(customer_id)
 From bangcuoi
 group by 1
 order by 2
+
+After find out the distribution of customers in RFM group, I find out the revenue of each group accordingly
+
+
+=>Champion, Loyal and At risk have the highest rev
+
+=>To increase revenue we need to understand the at risk group: where are they from, what they buy and why they stopped buying

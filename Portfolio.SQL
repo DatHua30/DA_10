@@ -286,4 +286,23 @@ group by 1
 order by 2 desc 
 =>>They are mainly from SP, RJ,MG state
 
-b. what they buy 
+b. what they buy the most
+, category as(Select a.customer_id, d.product_name
+From bangcuoi a 
+inner join public.olist_orders_dataset_2018 b 
+on a.customer_id = b.customer_id 
+inner join public.olist_orders_item_dataset c 
+on b.order_id = c.order_id 
+inner join public.olist_product_dataset d 
+on c.product_id = d.product_id
+where a.segment = 'At Risk')
+
+Select product_name, count(customer_id) as num_order
+From category
+where product_name is not null
+group by 1
+order by 2 desc 
+
+=>> They buy computer accessories, bed bath table, sport_lesiure the most
+
+c. Why they stopped buying
